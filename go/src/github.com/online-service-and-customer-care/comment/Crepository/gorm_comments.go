@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/jinzhu/gorm"
-	"gitlab.com/username/online-service-and-customer-care2.0/comment"
-	"gitlab.com/username/online-service-and-customer-care2.0/entity"
+	"github.com/online-service-and-customer-care/comment"
+	"github.com/online-service-and-customer-care/entity"
 )
 
 // CommentGormRepo implements menu.CommentRepository interface
