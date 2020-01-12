@@ -1,7 +1,7 @@
 package comment
 
 import (
-	"gitlab.com/username/online-service-and-customer-care2.0/entity"
+	"github.com/online-service-and-customer-care/entity"
 )
 
 // CommentRepository specifies customer comment related database operations
