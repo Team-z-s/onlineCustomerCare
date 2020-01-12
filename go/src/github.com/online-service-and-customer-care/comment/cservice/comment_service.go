@@ -1,8 +1,8 @@
 package cservice
 
 import (
-	"gitlab.com/username/online-service-and-customer-care2.0/comment"
-	"gitlab.com/username/online-service-and-customer-care2.0/entity"
+	"github.com/online-service-and-customer-care/comment"
+	"github.com/online-service-and-customer-care/entity"
 )
 
 // CommentService implements comment.CommentService interface
