@@ -1,6 +1,6 @@
 package comment
 
-import "gitlab.com/username/online-service-and-customer-care2.0/entity"
+import "github.com/online-service-and-customer-care/entity"
 
 // CommentService specifies customer comment related service
 type CommentService interface {
