@@ -1,87 +1,133 @@
 package main
 
 import (
-	
-	"net/http"
-"html/template"
+	"fmt"
+	"onlineCustomerCare/entity"
+	"onlineCustomerCare/login/loginRepository"
+	"onlineCustomerCare/login/loginService"
+	"onlineCustomerCare/rtoken"
+	"onlineCustomerCare/session"
+	"onlineCustomerCare/user/userRepository"
+	"onlineCustomerCare/user/userService"
+	//"time"
+
+	//"github.com/gorilla/mux"
+	//"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/julienschmidt/httprouter"
-
-	"gitlab.com/username/online-service-and-customer-care2.0/comment/Crepository"
-	"gitlab.com/username/online-service-and-customer-care2.0/comment/cservice"
-	"gitlab.com/username/online-service-and-customer-care2.0/user/user_repository"
-	"gitlab.com/username/online-service-and-customer-care2.0/user/user_service"
-	"gitlab.com/username/online-service-and-customer-care2.0/login/login_repository"
-	"gitlab.com/username/online-service-and-customer-care2.0/login/login_service"
-	"gitlab.com/username/online-service-and-customer-care2.0/delivery/http/handler"
-	"gitlab.com/username/online-service-and-customer-care2.0/employee/employee_repository"
-	"gitlab.com/username/online-service-and-customer-care2.0/employee/employee_service"
-	"gitlab.com/username/online-service-and-customer-care2.0/company/company_service"
-	"gitlab.com/username/online-service-and-customer-care2.0/company/company_repository"
+	"net/http"
+	"onlineCustomerCare/company/companyRepository"
+	"onlineCustomerCare/company/companyService"
+	"onlineCustomerCare/employee/employeeRepository"
+	"onlineCustomerCare/employee/employeeService"
+	"onlineCustomerCare/Service/ServiceRepository"
+	"onlineCustomerCare/Service/ServiceService"
+	"onlineCustomerCare/delivery/http/handler"
+	"text/template"
 )
-
-
-
+var tmpl = template.Must(template.ParseGlob("C:/Users/hp/go/src/onlineCustomerCare/ui/templates/*"))
+func Index(w http.ResponseWriter,r*http.Request ){
+	tmpl.ExecuteTemplate(w,"index.html",nil)
+}
+func createTables(dbconn *gorm.DB) []error {
+	errs := dbconn.CreateTable(&entity.User{}, &entity.Roles{}, &entity.Session{}, &entity.Employee{}, &entity.Employee_job{}, &entity.Companie{}, &entity.Service{},&entity.Account{}, &entity.Comment{}).GetErrors()
+	if errs != nil {
+		return errs
+	}
+	return nil
+}
 
 func main() {
-	tmpl := template.Must(template.ParseGlob("../../ui/templates/*"))
-	dbconn, err := gorm.Open("postgres", "postgres://postgres:lealem-g@localhost/customercare?sslmode=disable")
+	//createTables(dbconn)
 
-	if err != nil {
+	csrfSignKey := []byte(rtoken.GenerateRandomID(32))
+
+	fmt.Println(csrfSignKey)
+
+	tmpl := template.Must(template.ParseGlob("C:/Users/hp/go/src/onlineCustomerCare/ui/templates/*"))
+
+	connStr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", "postgres",
+		"lealem-g","localhost", "customercare")
+	dbconn, err := gorm.Open("postgres", connStr)
+
+
+
+	if err != nil  {
 		panic(err)
 	}
 
 	defer dbconn.Close()
+//	commentRepo := commentRepository.NewCommentGormRepo(dbconn)
+//	commentService := commentService.NewCommentService(commentRepo)
+	//commentHand := handler.NewCommentHandler(commentService)
 
-	//employee related repository and service
-	emplRepo := employee_repository.NewEmployeeGormRepo(dbconn)
-	emplSrv := employee_service.NewEmployeeServiceGorm(emplRepo)
-	employeeHandler := handler.NewEmployeeHandler(emplSrv,tmpl)
-	//comment related repository and service
-	comRepo := Crepository.NewCommentGormRepo(dbconn)
-	comserv := cservice.NewCommentService(comRepo)
-	comhan := handler.NewAdminCommentHandler(comserv,tmpl)
 
-	//login related repository and service
-	logRepo := login_repository.NewLoginGormRepo(dbconn)
-	logserv := login_service.NewLoginServiceGorm(logRepo)
-	loginhandler := handler.NewLoginHandler(logserv,tmpl)
 
-	//user related repository and service
-	userRepo := user_repository.NewUserGormRepo(dbconn)
-	userserv := user_service.NewUserService(userRepo)
-	userhandler := handler.NewUserHandler(userserv,tmpl)
+	logrepo := loginRepository.NewLoginGormRepo(dbconn)
+	logserv := loginService.NewLoginServiceGorm(logrepo)
+	//sessionrepo := loginRepository.NewSessionGormRepo(dbconn)
+	//sessionsrv := loginService.NewSessionService(sessionrepo)
 
-	//company related repository and service
-	compRepo := company_repository.NewCompanyGormRepo(dbconn)
-	compServ := company_service.NewCompanyService(compRepo)
-	comphandler := handler.NewCompanyHandler(compServ,tmpl)
+	loghand := handler.NewLoginHandler(logserv,tmpl)
 
-	//admin company  related repository and service
-	admincompanyhandler := handler.NewAdminCompanyHandler(compServ,tmpl)
+	userRepo := userRepository.NewUserGormRepo(dbconn)
+	userServ := userService.NewUserService(userRepo)
+	userHand := handler.NewUserHandler(userServ,tmpl)
 
-	router := httprouter.New()
+	compRepo := companyRepository.NewCompanyGormRepo(dbconn)
+	compserv := companyService.NewCompanyService(compRepo)
+	comphand := handler.NewCompanyHandler(compserv,logserv,tmpl)
 
-	router.GET("/admin_dashboard",loginhandler.Admindashboard)
-	router.POST("/admin_dashboard/add_Company",admincompanyhandler.AddCompany)
-	router.DELETE(".admin_dashboard/delete_company",admincompanyhandler.DeleteCompany)
+	sercRepo := ServiceRepository.NewServiceGormRepo(dbconn)
+	servServ := ServiceService.NewServiceService(sercRepo)
+	serviceHand := handler.NewServiceHandler(servServ,compserv,tmpl)
 
-	router.GET("/",loginhandler.Index)
-	router.POST("/login",loginhandler.Login)
-	router.POST("/user/signup",userhandler.Signin)
-	router.GET("/user/search",userhandler.Search)
-	router.POST("/user/comment",comhan.PostComment)
+	emplRepo := employeeRepository.NewEmployeeGormRepo(dbconn)
+	emplSerc := employeeService.NewEmployeeServiceGorm(emplRepo)
+	emplHand := handler.NewEmloyeeHandler(emplSerc,logserv,compserv,tmpl)
 
-	router.GET("/company/comment",comhan.GetComments)
-	router.POST("/company_dashboard",loginhandler.Companydashboard)
-	router.POST("company_dashboard/changelogo",comphandler.ChangeLogo)
-	router.POST("company_dashboard/addservice",comphandler.Addservice)
-	router.POST("/company_dashboard/take_attendance",comphandler.Take_attendance)
-	router.POST("/company_dashboard/calculatesallary",comphandler.Calculate_salary)
-	router.POST("/company_dashboard/add_employee", employeeHandler.PostEmployee)
-	router.DELETE("/company_dashboard/add_employee:id", employeeHandler.DeleteEmployee)
+//##############################################mulriplexer and http handle functions######################################################################
 
-	http.ListenAndServe(":8181", router)
+	mux := http.NewServeMux()
+	fs := http.FileServer(http.Dir("assets"))
+	mux.Handle("/assets/", http.StripPrefix("/assets/", fs))
+
+//*************************************************************************************
+
+	mux.HandleFunc("/",Index)  //+++++++++++++++++++++++
+	mux.HandleFunc("/login",loghand.Login) //++++++++++++++++++++++
+	mux.HandleFunc("/user/signUp",userHand.SignUp) //++++++++++++++++++++++
+	mux.HandleFunc("/logout",loghand.Logout)
+	mux.HandleFunc("/user/search",comphand.Search)
+	mux.HandleFunc("/company/detail",comphand.GetCompany)
+	//mux.HandleFunc("/user/postComment",commentHand.AddComment)
+
+	mux.HandleFunc("/admin_dashboard",comphand.AdminDashboard) //+++++++++++++++++++++++++
+	mux.HandleFunc("/company_dashboard",loghand.CompanyDashboard) //+++++++++++++++++++++++
+
+	mux.Handle("/employee/profile",session.Authenticated(http.HandlerFunc(emplHand.ShowProfile)))  //++++++++++++--------------
+	mux.Handle("/employee/seeTask",session.Authenticated(http.HandlerFunc(emplHand.AssignTask))) //---------
+//	mux.HandleFunc("/employee/progress",emplHand.Progress)//----------------------
+
+	mux.Handle("/company/addEmployee",session.Authenticated(http.HandlerFunc(emplHand.AddEmployee)))//++++++++++++++++++++++++--
+	mux.Handle("/company/deleteEmployee",session.Authenticated(http.HandlerFunc(emplHand.DeleteEmployee)))//+++++++++-------------
+	//mux.HandleFunc("/company/updateEmployee",emplHand.UpdateEmployee)
+	mux.HandleFunc("/company/update",comphand.UpdateCompany)
+	mux.HandleFunc("/company/assignTask",emplHand.AssignTask)
+	mux.Handle("/company/addService",session.Authenticated(http.HandlerFunc(serviceHand.AddService)))//++++++++++++++++++++++---------
+	mux.Handle("/company/deleteService",session.Authenticated(http.HandlerFunc(serviceHand.DeleteService)))
+	mux.Handle("/company/updateService",session.Authenticated(http.HandlerFunc(serviceHand.UpdateService)))
+	//mux.HandleFunc("/company/trackProgress",emplHand.Track)
+
+	mux.Handle("/admin/addCompany",session.Authenticated(http.HandlerFunc(comphand.AddCompany)))//+++++++++++++++++++--
+	mux.Handle("/admin/deleteCompany",session.Authenticated(http.HandlerFunc(comphand.DeleteCompany)))//++++++++++++++++--
+
+
+
+	http.ListenAndServe(":8282",mux)
+
 
 }
+
+
+

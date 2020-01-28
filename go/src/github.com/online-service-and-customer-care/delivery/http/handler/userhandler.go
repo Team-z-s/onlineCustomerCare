@@ -1,86 +1,76 @@
 package handler
 
 import (
-	"encoding/json"
-	"github.com/julienschmidt/httprouter"
-	"gitlab.com/username/online-service-and-customer-care2.0/company/company_service"
-	"gitlab.com/username/online-service-and-customer-care2.0/entity"
-	"gitlab.com/username/online-service-and-customer-care2.0/service/service_service"
-	"gitlab.com/username/online-service-and-customer-care2.0/user"
-	"go/types"
-	"html/template"
+	"fmt"
 	"net/http"
-
 )
-type UserHandler struct {
+import (
+	"onlineCustomerCare/entity"
+	"onlineCustomerCare/user"
+	"text/template"
+)
+
+type UserHandler struct{
 	userService user.UserService
-	tmpl        *template.Template
+	tmpl *template.Template
+
 }
-// NewUserHandler returns new AdminCommentHandler object
-func NewUserHandler(userService user.UserService , T *template.Template) *UserHandler {
-	return &UserHandler{userService: userService, tmpl: T}
+
+func NewUserHandler (userServ user.UserService,tmpl *template.Template)*UserHandler{
+	return &UserHandler{userService:userServ,tmpl:tmpl}
 }
-func (uh *UserHandler) Signin(w http.ResponseWriter,r *http.Request, _ httprouter.Params){
-	if r.Method == http.MethodPost {
-		l := r.ContentLength
-		body := make([]byte, l)
-		r.Body.Read(body)
-		usr := &entity.User{}
-		usr.FName = r.FormValue("firstname")
-		usr.LName = r.FormValue("lastname")
-		usr.Email = r.FormValue("email")
-		
-		usr.Phone = r.FormValue("phone")
-		usr.Username = r.FormValue("username")
-		usr.Password = r.FormValue("password")
 
-		err := json.Unmarshal(body, usr)
-
-		if err != nil {
-			w.Header().Set("Content-Type", "application/json")
-			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-			return
-		}
-		usr, errs := uh.userService.StoreUser(usr)
-
-		if len(errs) > 0 {
-			w.Header().Set("Content-Type", "application/json")
-			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-
-			return
-		}
-		http.Redirect(w, r, "/user/seatch", http.StatusSeeOther)
+func (uh *UserHandler) SignUp(w http.ResponseWriter, r *http.Request) {
+	user := entity.User{}
+	if r.Method == "GET" {
+		uh.tmpl.ExecuteTemplate(w,"signup.html",nil)
 
 	} else {
-		uh.tmpl.ExecuteTemplate(w, "signup.layout", nil)
-	}
-
-
-}
-func (uh *UserHandler) Search(w http.ResponseWriter,r *http.Request, _ httprouter.Params){
-	if r.Method == http.MethodPost{
-		l := r.ContentLength
-		body := make([]byte, l)
-		r.Body.Read(body)
-		serv := &entity.Service{}
-		serv.Name= r.FormValue("search_form")
-
-		err := json.Unmarshal(body, serv)
-
-		if err != nil {
-			w.Header().Set("Content-Type", "application/json")
-			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		user.ID = retutnuid(uh) + 1
+		user.FName = r.FormValue("first_name")
+		user.LName = r.FormValue("last_name")
+		user.Email = r.FormValue("email")
+		user.Phone = r.FormValue("phone")
+		user.Username = r.FormValue("username")
+		user.Password = r.FormValue("password")
+		pass := r.FormValue("password2")
+		if user.Password != pass {
+			uh.tmpl.ExecuteTemplate(w, "sighup.html", "Passwords doesn't match, re-enter password")
+			return
+		}
+		if user.Password != "" {
+			uh.tmpl.ExecuteTemplate(w, "signup.html", "This field is required")
 			return
 		}
 
-		serv,_ = service_service.NewServiceService().Service(serv.Name)
-		company,_=company_service.NewCompanyService().Company(uint(serv.CompanyID))
+		if len(user.Password) < 4 {
+			//println("password")
+			uh.tmpl.ExecuteTemplate(w, "signup.html", "password must be longer than 4 characters")
 
-		ran := make([]types.Object,2)
-		ran = append(ran, serv)
-		ran = append(ran,company)
-		uh.tmpl.ExecuteTemplate(w, "browse.layout", ran)
+			return
+		}
+		if len(user.Phone) < 10 || len(user.Phone) > 10  {
+			uh.tmpl.ExecuteTemplate(w, "signup.html", "phone number must be at least 10 character  ")
+			return
+		}
+		_, err := uh.userService.StoreUser(&user)
+		if len(err) > 0 {
+			fmt.Println("error")
+			uh.tmpl.ExecuteTemplate(w, "signup.html", nil)
+		}
+		fmt.Println("success")
+		http.Redirect(w, r, "/user/search", http.StatusSeeOther)
+
 	}
+}
 
-
+func retutnuid(uh *UserHandler) int {
+	users,_ := uh.userService.Users()
+	var i int = users[0].ID
+	for _, u:= range users{
+		if i < u.ID {
+			i = u.ID
+		}
+	}
+	return i
 }
