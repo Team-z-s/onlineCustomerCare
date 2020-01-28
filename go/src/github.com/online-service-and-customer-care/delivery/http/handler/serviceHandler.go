@@ -36,7 +36,7 @@ func(sh *ServiceHandler) AddService(w http.ResponseWriter, r *http.Request){
 			if len(errs) > 0{
 				sh.temp.ExecuteTemplate(w,"add_service.html",nil)
 			}
-			http.Redirect(w,r,"/company_dashbord",http.StatusSeeOther)
+			http.Redirect(w,r,"/company_dashboard",http.StatusSeeOther)
 
 		}
 

@@ -38,7 +38,7 @@ func (servRepo *ServiceGormRepo) Service(name string) (*entity.Service, []error)
 
 func (servRepo *ServiceGormRepo) ServiceById(id int) (*entity.Service, []error) {
 	srv := entity.Service{}
-	errs := servRepo.conn.Where("company_id = ?", id).GetErrors()
+	errs := servRepo.conn.Where("company_id = ?", id).First(&srv).GetErrors()
 	if len(errs) > 0 {
 		return nil, errs
 	}

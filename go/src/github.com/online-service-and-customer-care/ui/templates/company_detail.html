@@ -56,49 +56,35 @@
     </nav>
 </header>
 <body>
-  <div class="container">
-      <div class="row">
-          <div class="col-md-8">
-              <div class="row">
-                  {{range .Companie}}
-                  <div class="col-md-6">
-                      <img src="{{ .Logo}}">
 
-                  </div>
-                  <div class="col-md-6">
-                    <h3>{{ .Name}}</h3><br>
-                      <label>{{ .Moto}}</label>
-{{end}}
-                  </div>
-                  {{ range .Service}}
-                  <div >
-                      <h1>Service</h1>
+<div  id="serach_result">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Image</th>
+            <th scope="col">Moto</th>
 
-                      <h3>{{ .Name}}</h3><br>
-                      <label>{{ .Description}}</label>
-                  </div>
-{{end}}
-              </div>
+            <th scope="col">Email</th>
+            <th scope="col">Phone</th>
 
-          </div>
-          {{ range .Companie}}
-          <div class="col-md-4">
-              <h1>Contact</h1>
-              <div>
-              <label>Address: {{ .Address}}</label><br>
-            </div>
-            <div>
-              <label>Email: {{ .Email}}</label><br>
-            </div>
-            <div>
-              <label>Phone: {{ .Phone}}</label>
-            </div>
-           {{end}}
-          </div>
+        </tr>
+        </thead>
+        <tbody>
+        {{ range . }}
+            <tr>
+                <td> <img src="/assets/images/{{ .Logo }}" width="70rem" height="70rem" /> </td>
+                <th scope="row"> {{ .FullName }} </th>
 
-      </div>
+                <td> {{ .Moto }} </td>
+                <td> {{ .Email }} </td>
+                <td> {{ .Phone }} </td>
 
-  </div>
+            </tr>
+        {{ end }}
+        </tbody>
+    </table>
+</div>
   
 </body>
 </html>

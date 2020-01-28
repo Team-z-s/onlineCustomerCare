@@ -107,7 +107,7 @@ func main() {
 
 	mux.Handle("/employee/profile",session.Authenticated(http.HandlerFunc(emplHand.ShowProfile)))  //++++++++++++--------------
 	mux.Handle("/employee/seeTask",session.Authenticated(http.HandlerFunc(emplHand.AssignTask))) //---------
-//	mux.HandleFunc("/employee/progress",emplHand.Progress)//----------------------
+
 
 	mux.Handle("/company/addEmployee",session.Authenticated(http.HandlerFunc(emplHand.AddEmployee)))//++++++++++++++++++++++++--
 	mux.Handle("/company/deleteEmployee",session.Authenticated(http.HandlerFunc(emplHand.DeleteEmployee)))//+++++++++-------------

@@ -1,7 +1,7 @@
 package handler
 
 import (
-
+	"fmt"
 	"net/http"
 	"onlineCustomerCare/company"
 	"onlineCustomerCare/employee"
@@ -35,7 +35,7 @@ func (eh *EmployeeHandler) AddEmployee(w http.ResponseWriter, r *http.Request){
 
 		}else {
 			empl.CompanyID = comp.CompanyID
-			empl.EmployeeID = retutnemployeeid(eh)
+			empl.EmployeeID = retutnemployeeid(eh) + 1
 			empl.FName = r.FormValue("FName")
 			empl.LName = r.FormValue("LName")
 			empl.Email = r.FormValue("Email")
@@ -73,12 +73,22 @@ func (eh *EmployeeHandler) AddEmployee(w http.ResponseWriter, r *http.Request){
 	}
 }
 func (eh *EmployeeHandler) DeleteEmployee(w http.ResponseWriter, r *http.Request){
-	id,_ := strconv.Atoi( r.FormValue("ID"))
-	_,err := eh.emplService.DeleteEmployee(uint(id))
-	if len(err) > 0{
-		eh.temp.ExecuteTemplate(w, "delete_employee.html", nil)
+	if r.Method == http.MethodGet {
+		idRaw := r.URL.Query().Get("id")
+		id, err := strconv.Atoi(idRaw)
+		fmt.Println(id)
+
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		}
+
+
+		_, errs := eh.compService.DeleteCompany(uint(id))
+		if len(errs) > 0 {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		}
 	}
-	http.Redirect(w,r,"/##########################",http.StatusSeeOther)
+	http.Redirect(w, r, "/company_dashboard", http.StatusSeeOther)
 }
 
 func (eh *EmployeeHandler) AssignTask(w http.ResponseWriter, r *http.Request){

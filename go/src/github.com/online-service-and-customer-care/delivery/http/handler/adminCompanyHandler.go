@@ -8,7 +8,7 @@ import (
 	"onlineCustomerCare/Service"
 	"onlineCustomerCare/entity"
 	"onlineCustomerCare/login"
-	"onlineCustomerCare/session"
+	//"onlineCustomerCare/session"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -35,13 +35,16 @@ type Detail struct {
 }
 func (ch *CompanyHandler) GetCompany(w http.ResponseWriter, r *http.Request){
 	if r.Method == http.MethodGet{
-		ch.tmpl.ExecuteTemplate(w,"companydetail.html",nil)
-	}else{
-		cl := session.GetSessionData(w,r)
-		comp,_ := ch.compservice.CompanyByName(cl.Username)
-		serv,_ := ch.servService.ServiceById(comp.CompanyID)
-		d := Detail{company:comp,serv:serv}
-		ch.tmpl.ExecuteTemplate(w,"companydetail.html",d)
+		idRaw := r.URL.Query().Get("id")
+		id,_ := strconv.Atoi(idRaw)
+		fmt.Println("#########################################")
+		fmt.Println(id)
+		//cl := session.GetSessionData(w,r)
+		comp,_ := ch.compservice.Company(uint(id))
+		fmt.Println(comp)
+//		serv,_ := ch.servService.ServiceById(comp.CompanyID)
+		//d := Detail{company:comp}
+		ch.tmpl.ExecuteTemplate(w,"companydetail.html",comp)
 	}
 	http.Redirect(w,r,"/user/search",http.StatusSeeOther)
 }
@@ -96,6 +99,7 @@ func(ch *CompanyHandler) DeleteCompany(w http.ResponseWriter , r * http.Request)
 	if r.Method == http.MethodGet {
 		idRaw := r.URL.Query().Get("id")
 		id, err := strconv.Atoi(idRaw)
+		fmt.Println(id)
 
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
@@ -225,11 +229,17 @@ func (ch *CompanyHandler) Search(w http.ResponseWriter,r *http.Request) {
 	}
 }
 func retutnid(ch *CompanyHandler) int {
+	var i int
 	comp, _ := ch.compservice.Companies()
-	var i int = comp[0].CompanyID
-	for _, c:= range comp{
-		if i < c.CompanyID {
-			i = c.CompanyID
+	if len(comp) == 0 {
+		return 1
+	}else {
+
+		 i = comp[0].CompanyID
+		for _, c := range comp {
+			if i < c.CompanyID {
+				i = c.CompanyID
+			}
 		}
 	}
 	return i

@@ -30,7 +30,7 @@ func (compRepo *CompanyGormRepo) Companies() ([]entity.Companie, []error) {
 // Company retrieves a company from the database by its id
 func (compRepo *CompanyGormRepo) Company(id uint) (*entity.Companie, []error) {
 	comps := entity.Companie{}
-	errs := compRepo.conn.First(&comps, id).GetErrors()
+	errs := compRepo.conn.Where("company_id = ?", id).First(&comps).GetErrors()
 	if len(errs) > 0 {
 		return nil, errs
 	}
@@ -58,17 +58,15 @@ func (compRepo *CompanyGormRepo) UpdateCompany(company *entity.Companie) (*entit
 
 // DeleteCompany deletes a given company from the database
 func (compRepo *CompanyGormRepo) DeleteCompany(id uint) (*entity.Companie, []error) {
-	comp, errs := compRepo.Company(id)
+	comp := entity.Companie{}
 
+
+	compRepo.conn.Where("company_id=?", id).First(&comp).GetErrors()
+	errs := compRepo.conn.Delete(&comp).GetErrors()
 	if len(errs) > 0 {
 		return nil, errs
 	}
-
-	errs = compRepo.conn.Delete(comp, id).GetErrors()
-	if len(errs) > 0 {
-		return nil, errs
-	}
-	return comp, errs
+	return &comp, errs
 }
 
 // StoreCompany stores a given company in the database
