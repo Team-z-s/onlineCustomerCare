@@ -1,8 +1,6 @@
 package user
 
-import (
-	"gitlab.com/username/online-service-and-customer-care2.0/entity"
-)
+import "onlineCustomerCare/entity"
 
 //UserRepository specifies db opration for user
 type UserRepository interface {
@@ -12,3 +10,4 @@ type UserRepository interface {
 	DeleteUser(id uint) (*entity.User,[]error)
 	StoreUser(user *entity.User) (*entity.User,[]error)
 }
+

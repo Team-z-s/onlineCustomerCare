@@ -1,8 +1,8 @@
-package user_service
+package userService
 
 import (
-	"gitlab.com/username/online-service-and-customer-care2.0/entity"
-	"gitlab.com/username/online-service-and-customer-care2.0/user"
+	"onlineCustomerCare/entity"
+	"onlineCustomerCare/user"
 )
 
 // UserService implements user.UserService interface
@@ -55,3 +55,4 @@ func (us *UserService) DeleteUser(id uint) (*entity.User, []error) {
 func (us *UserService) StoreUser(user *entity.User) (*entity.User, []error) {
 	return nil, nil
 }
+

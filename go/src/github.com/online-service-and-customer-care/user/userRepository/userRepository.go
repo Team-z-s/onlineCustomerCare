@@ -1,9 +1,9 @@
-package user_repository
+package userRepository
 
 import (
 	"github.com/jinzhu/gorm"
-	"gitlab.com/username/online-service-and-customer-care2.0/entity"
-	"gitlab.com/username/online-service-and-customer-care2.0/user"
+	"onlineCustomerCare/entity"
+	"onlineCustomerCare/user"
 )
 
 // UserGormRepo implements user.UserRepository interface
@@ -71,3 +71,4 @@ func (userRepo *UserGormRepo) StoreUser(user *entity.User) (*entity.User, []erro
 	}
 	return us, errs
 }
+
