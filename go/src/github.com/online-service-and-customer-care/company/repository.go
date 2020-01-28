@@ -1,14 +1,14 @@
 package company
 
-import (
-	"gitlab.com/username/online-service-and-customer-care/entity"
-)
+import "onlineCustomerCare/entity"
 
 // CompanyRepository specifies company related database operations
 type CompanyRepository interface {
-	Companies() ([]entity.Company, []error)
-	Company(id uint) (*entity.Company, []error)
-	UpdateCompany(company *entity.Company) (*entity.Company, []error)
-	DeleteCompany(id uint) (*entity.Company, []error)
-	StoreCompany(company *entity.Company) (*entity.Company, []error)
+	Companies() ([]entity.Companie, []error)
+	Company(id uint) (*entity.Companie, []error)
+	CompanyByName(name string)(*entity.Companie,[]error)
+	UpdateCompany(company *entity.Companie) (*entity.Companie, []error)
+	DeleteCompany(id uint) (*entity.Companie, []error)
+	StoreCompany(company *entity.Companie) (*entity.Companie, []error)
 }
+
