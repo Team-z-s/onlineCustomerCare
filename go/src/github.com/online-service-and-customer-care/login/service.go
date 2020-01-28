@@ -1,11 +1,16 @@
 package login
 
-import "gitlab.com/username/online-service-and-customer-care2.0/entity"
+import "onlineCustomerCare/entity"
 
 // LoginService specifies application employee related services
 type LoginService interface {
-	Users() ([]entity.User, []error)
-	Companies() ([]entity.Companie, []error)
-	Employees() ([]entity.Employee, []error)
-	Roles() ([]entity.Roles, []error)
+	Account(username string)(*entity.Account,error)
+	UpdateAccount(account *entity.Account) (*entity.Account, []error)
+	DeleteAccount(username string) (*entity.Account, []error)
+	StoreAccount(account *entity.Account) (*entity.Account, []error)
+}
+type SessionService interface {
+	Session(sessionID string) (*entity.Session, []error)
+	StoreSession(session *entity.Session) (*entity.Session, []error)
+	DeleteSession(sessionID string) (*entity.Session, []error)
 }
