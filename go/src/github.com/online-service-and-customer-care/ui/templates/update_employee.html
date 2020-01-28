@@ -1,0 +1,225 @@
+{{define "update-employee,html"}}
+<!DocType html>
+<html>
+<head>
+    <meta>
+   
+       
+<!--====== Required meta tags ======-->
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!--====== Title ======-->
+<title>Online Customer Care and Service Center System</title>
+
+<!--====== Favicon Icon ======-->
+<link rel="shortcut icon" href="../assets/images/logo3.png" type="image/png">
+
+<!--====== Bootstrap css ======-->
+<link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+
+<!--====== Animate css ======-->
+<link rel="stylesheet" href="../assets/css/animate.css">
+
+<!--====== Magnific Popup css ======-->
+<link rel="stylesheet" href="../assets/css/magnific-popup.css">
+
+<!--====== Slick css ======-->
+<link rel="stylesheet" href="../assets/css/slick.css">
+
+<!--====== Line Icons css ======-->
+<link rel="stylesheet" href="../assets/css/LineIcons.css">
+
+<!--====== Default css ======-->
+<link rel="stylesheet" href="../assets/css/default.css">
+
+<!--====== Style css ======-->
+<link rel="stylesheet" href="../assets/css/style.css">
+
+<!--====== Responsive css ======-->
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+<link href="bootstrap.min.css" rel="stylesheet" media="screen" type="text/css">
+<link rel="stylesheet" href="../assets/css/header.css">
+<link rel="stylesheet" href="../assets/style.css">
+    <title>{{.}}</title>
+</head>
+<header>
+    <nav class="navbar bg-dark navbar-expand-sm navbar-custom navbar-fixed-top">
+
+        <div class="container">
+            <a class="navbar-brand" href="#"><img  src="../assets/images/logo3.png" width="50px" >Legna Customer Care </a>
+ 
+        </div>
+        <a href="/logout"><button class="main-btn">log out</button></a>
+    </nav>
+</header>
+<body>
+
+<div class="container">
+
+	<section id="content">
+		<form method="post" action="/company/updateEmployee"  id="registration_form">
+			<h1>Update Employee</h1>
+			<div>
+				<input type="text" placeholder="First name" required id="firstname" />
+			</div>
+			<div>
+				<input type="text" placeholder="Last name" required id="lastname" />
+			</div>
+			<div>
+				<input type="text" placeholder="City" required id="city" />
+			</div>
+			<div>
+				<input type="text" placeholder="Street/Kebele" required id="street_kebele" />
+			</div>
+			<div>
+				<input type="number" placeholder="Phone number" required id="phone" />
+			</div>
+			<div>
+				<input type="email" placeholder="Email" required id="email" />
+			</div>
+			<div>
+				<input type="number" placeholder="Salary" required id="salary" />
+			</div>
+			<div>
+				<p align="left" style="padding-left: 40px;">Shift:</p>
+				<select id="shift">
+					<option value="day">Day</option>
+					<option value="night">Night</option>
+				</select>
+			
+			</div>
+			<div>
+				<input type="submit" value="Update" style="padding: 0px !important"/>
+				<input type="reset" value="Clear" style="padding: 0px !important"/>
+			</div>
+		</form><!-- form -->
+	</section><!-- content -->
+</div><!-- container -->
+
+
+<!--====== Title ======-->
+<title>Online Customer Care and Service Center System</title>
+    
+<!--====== Favicon Icon ======-->
+<link rel="shortcut icon" href="assets/images/logo3.png" type="image/png">
+
+<!--====== Bootstrap css ======-->
+<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+
+<!--====== Animate css ======-->
+<link rel="stylesheet" href="assets/css/animate.css">
+
+<!--====== Magnific Popup css ======-->
+<link rel="stylesheet" href="assets/css/magnific-popup.css">
+
+<!--====== Slick css ======-->
+<link rel="stylesheet" href="assets/css/slick.css">
+
+<!--====== Line Icons css ======-->
+<link rel="stylesheet" href="assets/css/LineIcons.css">
+
+<!--====== Default css ======-->
+<link rel="stylesheet" href="assets/css/default.css">
+
+<!--====== Style css ======-->
+<link rel="stylesheet" href="assets/css/style.css">
+
+<!--====== Responsive css ======-->
+<link rel="stylesheet" href="assets/css/responsive.css">
+
+
+
+<!--====== CONTACT PART ENDS ======-->
+
+<!--====== FOOTER PART START ======-->
+
+<section id="footer" class="footer-area">
+    <div class="container">
+        <div class="footer-widget pt-75 pb-120">
+            <div class="row">
+                <div class="col-lg-3 col-md-5 col-sm-7">
+                    <div class="footer-logo mt-40">
+                        <a href="#">
+                            <img src="assets/images/logo3.png" width="80px" alt="Logo">
+                        </a>
+                        <p align="justify" class="mt-10">ድርጅታችን ከሚሰጠው አገልግሎት ውስጥ የግልና የመንግስት ድርጅቶችን በመመዝገብ አገልግሎቶቻቸውን ማስተዋወቅና ደንበኛ ማፍራት እንዲችሉ ማስቻል አንዱ ነው። </p>
+                        <ul class="footer-social mt-25">
+                            <li><a href="#"><i class="lni-facebook-filled"></i></a></li>
+                            <li><a href="#"><i class="lni-twitter-original"></i></a></li>
+                            <li><a href="#"><i class="lni-instagram"></i></a></li>
+                        </ul>
+                    </div> <!-- footer logo -->
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-5">
+                    <div class="footer-link mt-50">
+                        <h5 class="f-title">Services</h5>
+                        <ul>
+                            <li>Company Registration</li>
+                            <li>Services Registration</li>
+                            <li>Employee Registration</li>
+                            <li>Employee Attendance</li>
+                        </ul>
+                    </div> <!-- footer link -->
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-5">
+                    <div class="footer-link mt-50">
+                        <h5 class="f-title">Help</h5>
+                        <ul>
+                            <li><a href="#">Home</a></li>
+                            <li><a href="#contact">Contact Us</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div> <!-- footer link -->
+                </div>
+                <div class="col-lg-4 col-md-5 col-sm-7">
+                    <div class="footer-info mt-50">
+                        <h5 class="f-title">Contact Info</h5>
+                        <ul>
+                            <li>
+                                <div class="single-footer-info mt-20">
+                                    <span>Phone :</span>
+                                    <div class="footer-info-content">
+                                        <p>+251 920 xxxxxx</p>
+                                        
+                                    </div>
+                                </div> <!-- single footer info -->
+                            </li>
+                            <li>
+                                <div class="single-footer-info mt-20">
+                                    <span>Email :</span>
+                                    <div class="footer-info-content">
+                                        
+                                        <p>Teamz@gmail.com</p>
+                                    </div>
+                                </div> <!-- single footer info -->
+                            </li>
+                            <li>
+                                <div class="single-footer-info mt-20">
+                                    <span>Address :</span>
+                                    <div class="footer-info-content">
+                                        <p>Addis Ababa, Ethiopia</p>
+                                    </div>
+                                </div> <!-- single footer info -->
+                            </li>
+                        </ul>
+                    </div> <!-- footer link -->
+                </div>
+            </div> <!-- row -->
+        </div> <!-- footer widget -->
+        
+    </div> <!-- container -->
+</section>
+
+<!--====== FOOTER PART ENDS ======-->
+
+<!--====== BACK TO TOP PART START ======-->
+
+<a href="#" class="back-to-top"><i class="lni-chevron-up"></i></a>
+
+<!--====== BACK TO TOP PART ENDS ======-->
+
+
+{{end}}

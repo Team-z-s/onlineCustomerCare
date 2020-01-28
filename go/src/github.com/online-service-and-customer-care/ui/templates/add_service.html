@@ -1,0 +1,84 @@
+{{define "add_service.html"}}
+<!DocType html>
+<html>
+<head>
+    <meta>
+   
+       
+<!--====== Required meta tags ======-->
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!--====== Title ======-->
+<title>Online Customer Care and Service Center System</title>
+
+<!--====== Favicon Icon ======-->
+<link rel="shortcut icon" href="../assets/images/logo3.png" type="image/png">
+
+<!--====== Bootstrap css ======-->
+<link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+
+<!--====== Animate css ======-->
+<link rel="stylesheet" href="../assets/css/animate.css">
+
+<!--====== Magnific Popup css ======-->
+<link rel="stylesheet" href="../assets/css/magnific-popup.css">
+
+<!--====== Slick css ======-->
+<link rel="stylesheet" href="../assets/css/slick.css">
+
+<!--====== Line Icons css ======-->
+<link rel="stylesheet" href="../assets/css/LineIcons.css">
+
+<!--====== Default css ======-->
+<link rel="stylesheet" href="../assets/css/default.css">
+
+<!--====== Style css ======-->
+<link rel="stylesheet" href="../assets/css/style.css">
+
+<!--====== Responsive css ======-->
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+<link href="bootstrap.min.css" rel="stylesheet" media="screen" type="text/css">
+<link rel="stylesheet" href="../assets/css/header.css">
+<link rel="stylesheet" href="../assets/style.css">
+    <title>{{.}}</title>
+</head>
+<header>
+    <nav class="navbar bg-dark navbar-expand-sm navbar-custom navbar-fixed-top">
+
+        <div class="container">
+            <a class="navbar-brand" href="#"><img  src="../assets/images/logo3.png" width="50px" >Legna Customer Care </a>
+ 
+        </div>
+        <button class="main-btn" action="/logout" >log out</button>
+    </nav>
+</header>
+<body>
+<div class="container">
+	
+	<section id="content">
+		<form method="post" action="/company/addService" id="registration_form">
+			<h1>Add Service</h1>
+			<div>
+				<input type="text" name="Name" placeholder="name" required  />
+			</div>
+			<div>
+				<textarea name="Description" placeholder="Description" required style="resize: none;" ></textarea>
+				<br>
+				<span id="register_err" style="color: #f00;"></span>
+				<span id="register_sucess" style="color: #009933;"></span>
+			</div>
+			<div>
+				<input type="submit" value="Add" style="padding: 0px !important"/>
+				<input type="reset" value="Clear" style="padding: 0px !important"/>
+				<a href="/company/updateService"> <input type="submit" value="Update" style="padding: 0px !important"/></a>
+			</div>
+		</form><!-- form -->
+	</section><!-- content -->
+</div><!-- container -->
+</body>
+</html>
+
+{{end}}

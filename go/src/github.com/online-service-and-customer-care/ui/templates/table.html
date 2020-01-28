@@ -1,0 +1,33 @@
+
+{{define "table.html"}}
+    <div id="serach_result">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Image</th>
+                <th scope="col">Moto</th>
+
+                <th scope="col">Email</th>
+                <th scope="col">Phone</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {{ range . }}
+                <tr>
+                    <td> <img src="/assets/images/{{ .Logo }}" width="70rem" height="70rem" /> </td>
+                    <th scope="row"> {{ .FullName }} </th>
+
+                    <td> {{ .Moto }} </td>
+                    <td> {{ .Email }} </td>
+                    <td> {{ .Phone }} </td>
+                    <td> <a href="/company/update ">Edit</a> </td>
+                    <td> <a href="/admin/company/delete?id={{ .CompanyID }}">Delete</a> </td>
+                </tr>
+            {{ end }}
+            </tbody>
+        </table>
+    </div>
+
+{{end}}

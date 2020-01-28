@@ -1,0 +1,134 @@
+  {{define "search.html"}}
+<!DocType html>
+<html>
+<head>
+    <meta>
+   
+       
+<!--====== Required meta tags ======-->
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!--====== Title ======-->
+<title>Online Customer Care and Service Center System</title>
+
+<!--====== Favicon Icon ======-->
+<link rel="shortcut icon" href="../assets/images/logo3.png" type="image/png">
+
+<!--====== Bootstrap css ======-->
+<link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+
+<!--====== Animate css ======-->
+<link rel="stylesheet" href="../assets/css/animate.css">
+
+<!--====== Magnific Popup css ======-->
+<link rel="stylesheet" href="../assets/css/magnific-popup.css">
+
+<!--====== Slick css ======-->
+<link rel="stylesheet" href="../assets/css/slick.css">
+
+<!--====== Line Icons css ======-->
+<link rel="stylesheet" href="../assets/css/LineIcons.css">
+
+<!--====== Default css ======-->
+<link rel="stylesheet" href="../assets/css/default.css">
+
+<!--====== Style css ======-->
+<link rel="stylesheet" href="../assets/css/style.css">
+
+<!--====== Responsive css ======-->
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+<link href="bootstrap.min.css" rel="stylesheet" media="screen" type="text/css">
+<link rel="stylesheet" href="../assets/css/header.css">
+<link rel="stylesheet" href="../assets/style.css">
+    <title>{{.}}</title>
+</head>
+<header>
+    <nav class="navbar bg-dark navbar-expand-sm navbar-custom navbar-fixed-top">
+
+        <div class="container">
+            <a class="navbar-brand" href="#"><img  src="../assets/images/logo3.png" width="50px" >Legna Customer Care </a>
+ 
+        </div>
+        <button class="main-btn" >log out</button>
+    </nav>
+</header>
+<body>
+
+<a style="margin:1% ;margin-left:80% " href="/admin/addCompany">  <button class="main-btn" >Add Company</button></a>
+<section id="contact" class="contact-area">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="contact-title text-center">
+                    <h2 class="title">Search</h2>
+                </div> <!-- contact title -->
+            </div>
+        </div> <!-- row -->
+        <div class="contact-box mt-70">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="contact-info pt-25">
+                        <h4 class="info-title">Search for companies.</h4>
+                    </div> <!-- contact info -->
+                </div>
+                <div class="col-lg-8">
+                    <div class="contact-form">
+                        <form id="search_form" action="/admin_dashboard"  method="post" data-toggle="validator">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="single-form form-group">
+                                        <input type="text" name="keyword" placeholder="Company name or service" data-error="Company info is required." required="required">
+                                        <div class="help-block with-errors" style="color: #f00;" id="error_msg"></div>
+                                    </div> <!-- single form -->
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="single-form form-group">
+                                        <button class="main-btn" type="submit">Search</button>
+                                    </div> <!-- single form -->
+                                </div>
+                            </div> <!-- row -->
+                        </form>
+                    </div> <!-- row -->
+                </div>
+                <div id="serach_result">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Image</th>
+                <th scope="col">Moto</th>
+                                
+                <th scope="col">Email</th>
+                <th scope="col">Phone</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {{ range . }}
+                <tr>
+                    <td> <img src="/assets/images/{{ .Logo }}" width="70rem" height="70rem" /> </td>
+                    <th scope="row"> {{ .FullName }} </th>
+
+                    <td> {{ .Moto }} </td>
+                    <td> {{ .Email }} </td>
+                    <td> {{ .Phone }} </td>
+                    <td> <a href="/company/update ">Edit</a> </td>
+                    <td> <a href="/admin/deleteCompany?id={{ .CompanyID }}">Delete</a> </td>
+                </tr>
+            {{ end }}
+            </tbody>
+        </table>
+    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+   <!-- container -->
+</body>
+</html>
+
+  {{end}}
