@@ -1,154 +1,111 @@
 package handler
 
 import (
-	"encoding/json"
-	"html/template"
-	"net/http"
-	"strconv"
 
-	"github.com/julienschmidt/httprouter"
-	"gitlab.com/username/online-service-and-customer-care2.0/employee"
-	"gitlab.com/username/online-service-and-customer-care2.0/entity"
+	"net/http"
+	"onlineCustomerCare/company"
+	"onlineCustomerCare/employee"
+	"onlineCustomerCare/entity"
+	"onlineCustomerCare/login"
+	"onlineCustomerCare/session"
+	"strconv"
+	"text/template"
 )
 
-// EmployeeHandler handles comment related http requests
 type EmployeeHandler struct {
 	emplService employee.EmployeeService
-	tmpl        *template.Template
+	logservice login.LoginService
+	compService company.CompanyService
+	temp *template.Template
 }
 
-// NewEmployeeHandler returns new AdminCommentHandler object
-func NewEmployeeHandler(emplService employee.EmployeeService, T *template.Template) *EmployeeHandler {
-	return &EmployeeHandler{emplService: emplService, tmpl:T}
+func NewEmloyeeHandler(es employee.EmployeeService,log login.LoginService,cs company.CompanyService,T *template.Template)*EmployeeHandler{
+	return &EmployeeHandler{emplService:es,logservice:log,compService:cs,temp:T}
 }
+func (eh *EmployeeHandler) AddEmployee(w http.ResponseWriter, r *http.Request){
+	empl := entity.Employee{}
+	act := entity.Account{}
+	cl := session.GetSessionData(w,r)
 
-// GetEmployees handles GET /v1/admin/comments request
-func (eh *EmployeeHandler) GetEmployees(w http.ResponseWriter,
-	r *http.Request, _ httprouter.Params) {
+	if r.Method == http.MethodGet {
+		eh.temp.ExecuteTemplate(w, "add_employee.html", nil)
+	}else {
+		comp,errcc := eh.compService.CompanyByName(cl.Username)
+		if len(errcc)>0{
 
-	employee, errs := eh.emplService.Employees()
+		}else {
+			empl.CompanyID = comp.CompanyID
+			empl.EmployeeID = retutnemployeeid(eh)
+			empl.FName = r.FormValue("FName")
+			empl.LName = r.FormValue("LName")
+			empl.Email = r.FormValue("Email")
+			empl.Phone = r.FormValue("Phone")
+			empl.Address = r.FormValue("Address")
+			empl.Username = r.FormValue("Username")
+			empl.Password = r.FormValue("password")
+			empl.Salary, _ = strconv.ParseFloat(r.FormValue("Salary"), 64)
 
-	if len(errs) > 0 {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
+			mf, fh, err := r.FormFile("Photo")
 
-	output, err := json.MarshalIndent(employee, "", "\t\t")
+			//fmt.Println(mf)
+			//fmt.Println(fh)
 
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			if err != nil {
+				panic(err)
+			}
+			defer mf.Close()
 
-		return
-	}
+			empl.Phone = fh.Filename
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(output)
-	return
+			writeFile(&mf, fh.Filename)
 
-}
+			act.Username = r.FormValue("Username")
+			act.Password = r.FormValue("password")
+			act.Role_id = 3
 
-// GetSingleEmployee handles GET /v1/admin/comments/:id request
-func (eh *EmployeeHandler) GetSingleEmployee(w http.ResponseWriter,
-	r *http.Request, ps httprouter.Params) {
-
-	id, err := strconv.Atoi(ps.ByName("id"))
-
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	employee, errs := eh.emplService.Employee(uint(id))
-
-	if len(errs) > 0 {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	output, err := json.MarshalIndent(employee, "", "\t\t")
-
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(output)
-	return
-}
-
-//Index dsng
-
-//Add fjdgl
-func (eh *EmployeeHandler) Add(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	eh.tmpl = template.Must(template.ParseGlob("../../ui/templates/*"))
-	eh.tmpl.ExecuteTemplate(w, "addemployee.layout", nil)
-}
-
-// PostEmployee handles POST /v1/admin/comments request
-func (eh *EmployeeHandler) PostEmployee(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	if r.Method == http.MethodPost {
-		l := r.ContentLength
-		body := make([]byte, l)
-		r.Body.Read(body)
-		employee := &entity.Employee{}
-		employee.FName = r.FormValue("firstname")
-		employee.LName = r.FormValue("lastname")
-		employee.Email = r.FormValue("email")
-		employee.Address = r.FormValue("city") + r.FormValue("street_kebele")
-		employee.Phone = r.FormValue("phone")
-		employee.Sallary, _ = strconv.ParseFloat(r.FormValue("salary"), 64)
-		employee.Username = r.FormValue("username")
-		employee.Password = r.FormValue("password")
-
-		err := json.Unmarshal(body, employee)
-
-		if err != nil {
-			w.Header().Set("Content-Type", "application/json")
-			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-			return
+			_, errs := eh.emplService.StoreEmployee(&empl)
+			_, errsa := eh.logservice.StoreAccount(&act)
+			if len(errs) > 0 || len(errsa) > 0 {
+				eh.temp.ExecuteTemplate(w, "add_employee.html", nil)
+			}
+			http.Redirect(w, r, "/company_dashboard", http.StatusSeeOther)
 		}
-		employee, errs := eh.emplService.StoreEmployee(employee)
+	}
+}
+func (eh *EmployeeHandler) DeleteEmployee(w http.ResponseWriter, r *http.Request){
+	id,_ := strconv.Atoi( r.FormValue("ID"))
+	_,err := eh.emplService.DeleteEmployee(uint(id))
+	if len(err) > 0{
+		eh.temp.ExecuteTemplate(w, "delete_employee.html", nil)
+	}
+	http.Redirect(w,r,"/##########################",http.StatusSeeOther)
+}
 
-		if len(errs) > 0 {
-			w.Header().Set("Content-Type", "application/json")
-			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+func (eh *EmployeeHandler) AssignTask(w http.ResponseWriter, r *http.Request){
 
-			return
+}
+func (eh *EmployeeHandler) ShowProfile(w http.ResponseWriter, r *http.Request){
+	//####################################### find the data of the employee from the session and execute the template with the provided data
+
+
+	eh.temp.ExecuteTemplate(w,"employee_profile.html",nil)
+}
+
+func retutnemployeeid(eh *EmployeeHandler) int {
+	var i int
+	empl, _ := eh.emplService.Employees()
+	if len(empl) == 0{
+		return 0
+	}else {
+		i = empl[0].EmployeeID
+		for _, e := range empl {
+			if i < e.EmployeeID {
+				i = e.EmployeeID
+			}
 		}
-		http.Redirect(w, r, "/Index", http.StatusSeeOther)
-
-	} else {
-		eh.tmpl.ExecuteTemplate(w, "addemployee.layout", nil)
 	}
-
+	return i
 }
 
-// DeleteEmployee handles DELETE /v1/admin/comments/:id request
-func (eh *EmployeeHandler) DeleteEmployee(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
-	id, err := strconv.Atoi(ps.ByName("id"))
 
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	_, errs := eh.emplService.DeleteEmployee(uint(id))
-
-	if len(errs) > 0 {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNoContent)
-	return
-}
