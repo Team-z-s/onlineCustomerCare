@@ -1,6 +1,6 @@
 package employee
 
-import "gitlab.com/username/online-service-and-customer-care/entity"
+import "onlineCustomerCare/entity"
 
 // EmployeeService specifies application employee related services
 type EmployeeService interface {

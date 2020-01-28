@@ -1,6 +1,7 @@
 package employee
 
-import "gitlab.com/username/online-service-and-customer-care/entity"
+import "onlineCustomerCare/entity"
+
 
 // EmployeeRepository specifies application employee related database operations
 type EmployeeRepository interface {
