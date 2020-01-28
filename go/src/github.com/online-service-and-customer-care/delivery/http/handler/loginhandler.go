@@ -1,72 +1,100 @@
 package handler
 
 import (
-	"github.com/julienschmidt/httprouter"
-	"gitlab.com/username/online-service-and-customer-care2.0/entity"
-	"gitlab.com/username/online-service-and-customer-care2.0/login"
-	"html/template"
+	//"context"
+	//"onlineCustomerCare/rtoken"
+	//"onlineCustomerCare/validation"
+
+	"time"
+
+	//"fmt"
+	//"github.com/dgrijalva/jwt-go"
 	"net/http"
+	"onlineCustomerCare/entity"
+	"onlineCustomerCare/login"
+	//"onlineCustomerCare/rtoken"
+	"onlineCustomerCare/session"
+	//"onlineCustomerCare/validation"
+	"text/template"
+	//"time"
 )
+
 type LoginHandler struct {
-	logService login.LoginService
-	tmpl        *template.Template
+	logservice login.LoginService
+	temp *template.Template
+
+	loggedInUser   *entity.User
 }
-// NewEmployeeHandler returns new AdminCommentHandler object
-func NewLoginHandler(logService login.LoginService, T *template.Template) *LoginHandler {
-	return &LoginHandler{logService: logService, tmpl:T}
+
+
+func NewLoginHandler(logserv login.LoginService, T *template.Template)*LoginHandler {
+	return &LoginHandler{logservice: logserv, temp: T}
 }
-//Login check if the user is autoraized
-func (lh *LoginHandler) Login(w http.ResponseWriter,r *http.Request, _ httprouter.Params){
-	if r.Method == http.MethodPost{
-		var username = r.FormValue("username")
-		var password = r.FormValue("password")
+func (lh *LoginHandler) Login(w http.ResponseWriter, r *http.Request) {
+	act := entity.Account{}
+	if r.Method == http.MethodGet {
+		lh.temp.ExecuteTemplate(w, "login.html", nil)
 
-		if username == "teamz" && password =="teamzpass"{
-		 	http.Redirect(w, r, "/admin_dashboard", http.StatusSeeOther)
-		 }
- 		var entry =lh.chakeRole(username,password)
- 		if entry == "user"{
+	} else {
+			act.Username =r.FormValue("username")
+			act.Password = r.FormValue("password")
+			account, err := lh.logservice.Account(act.Username)
+			tokenString, err := session.Generate(act.Username)
+			if err != nil {
+				return
+			}
+			http.SetCookie(w, &http.Cookie{
+				Name:  "token",
+				Value: tokenString,
+			})
+			//fmt.Println(tokenString)
+			//cl := session.GetSessionData(w,r)
+			//fmt.Println(cl.Username)
+			Verrors := "Invalid Username or Password"
+			if err != nil {
+				lh.temp.ExecuteTemplate(w, "login.html", Verrors)
+			}else{
+				if len(Verrors) >0 || act.Password == account.Password {
+					role := account.Role_id
+						switch role {
+							case 1:
 
-			http.Redirect(w,r,"/user/search",http.StatusSeeOther)
+								http.Redirect(w, r, "/admin_dashboard", http.StatusSeeOther)
 
-	//	http.Redirect(w, r, "/admin_dashboard", http.StatusSeeOther) 
- } else if entry == "company"{
-	http.Redirect(w, r, "/company_dashboard", http.StatusSeeOther)
-	//lh.tmpl.ExecuteTemplate(w,"index.layout",nil)
-	
- }
-
-
+								break
+							case 2:
+								http.Redirect(w, r, "/company_dashboard", http.StatusSeeOther)
+								break
+							case 3:
+								http.Redirect(w, r, "/employee/profile", http.StatusSeeOther)
+								break
+							case 4:
+								http.Redirect(w, r, "/user/search", http.StatusSeeOther)
+								break
+							default:
+								lh.temp.ExecuteTemplate(w, "login.html", Verrors)
+						}
+					}else{
+						lh.temp.ExecuteTemplate(w, "login.html", Verrors)
+					}
+				}
 	}
+}
 
-}
-//Index page of the web application
-func (lh *LoginHandler) Index(w http.ResponseWriter,r *http.Request, _ httprouter.Params){
-	lh.tmpl.ExecuteTemplate(w,"index.layout",nil)
-}
-func (lh *LoginHandler) Companydashboard(w http.ResponseWriter,r *http.Request, _ httprouter.Params){
-	lh.tmpl.ExecuteTemplate(w,"company_dashboard.layout",nil)
-}
-func (lh *LoginHandler) Admindashboard(w http.ResponseWriter,r *http.Request, _ httprouter.Params){
-	lh.tmpl.ExecuteTemplate(w,"admindahsboard.layout",nil)
-}
-//chake the role
-func (lh *LoginHandler) chakeRole(username string,password string) string{
-	user  := []entity.User{}
-	comps := []entity.Companie{}
-	user,_ = lh.logService.Users()
-	comps,_= lh.logService.Companies()
-	var role string
-	for _,u := range user{
-		if u.Username == username && u.Password == password  {
-		role = "user"
+
+func (lh *LoginHandler) Logout(w http.ResponseWriter, r *http.Request) {
+
+	c := http.Cookie{
+		Name:    "token",
+		MaxAge:  -1,
+		Expires: time.Unix(1, 0),
+		Value:   "",
 	}
+	http.SetCookie(w, &c)
+	http.Redirect(w, r, "/Index", http.StatusSeeOther)
 }
-for _,c := range comps{
-	if c.FullName == username && c.Password == password{
-		
-		role = "company"
-	}
+
+func (lh *LoginHandler) CompanyDashboard(w http.ResponseWriter, r *http.Request){
+	lh.temp.ExecuteTemplate(w,"company_dashboard.html",nil)
 }
-return role
-}
+
